@@ -52,8 +52,7 @@ contract MyToken is ERC20, Ownable {
         return true;
     }
     function close() external onlyOwner {
-        uint256 _amount = address(this).balance;
-        payable(msg.sender).transfer(_amount);
+        payable(msg.sender).transfer(address(this).balance);
         selfdestruct(payable(owner()));
     }
     
