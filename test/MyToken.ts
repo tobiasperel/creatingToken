@@ -25,6 +25,12 @@ describe("MyToken", function () {
       const { myToken } = await loadFixture(deployToken);
       expect(await myToken.totalSupply()).to.equal(0);
     });
+    it("view name and symbol", async function () {
+      const { myToken } = await loadFixture(deployToken);
+      expect(await myToken.name()).to.equal("TobiasPerel");
+      expect(await myToken.symbol()).to.equal("TP");
+    } ) ;
+
     it("mint token", async function () {
       const { myToken, owner } = await loadFixture(deployToken);
       await myToken.mint(owner.address, 100);
@@ -33,7 +39,7 @@ describe("MyToken", function () {
     it("transfer token", async function () {
       const { myToken, owner, otherAccount } = await loadFixture(deployToken);
       await myToken.mint(owner.address, 100);
-      await myToken.transfer(otherAccount.address, 20);
+      await myToken.transferToken(otherAccount.address, 20);
       expect(await myToken.balanceOf(otherAccount.address)).to.equal(20);
       expect(await myToken.balanceOf(owner.address)).to.equal(80);
       expect(await myToken.totalSupply()).to.equal(100);
@@ -42,13 +48,17 @@ describe("MyToken", function () {
       const { myToken, owner, otherAccount } = await loadFixture(deployToken);
       await myToken.mint(owner.address, 100);
       await myToken.transfer(otherAccount.address, 20);
-      await myToken.sell(otherAccount.address, 20);
+      await myToken.connect(otherAccount).sell(20);
       expect(await myToken.balanceOf(otherAccount.address)).to.equal(0);
-      expect(await myToken.balanceOf(owner.address)).to.equal(100);
-      expect(await myToken.totalSupply()).to.equal(100);
-    }
-    
-    
+    });
+    it("destroy contract", async function () {
+      const { myToken, owner, otherAccount } = await loadFixture(deployToken);
+      await myToken.mint(owner.address, 100);
+      await myToken.transfer(otherAccount.address, 20);
+      expect(await myToken.balanceOf(owner.address)).to.equal(80);
+      // expect (await myToken.connect(otherAccount).close()).to.be.rejectedWith("Ownable: caller is not the owner");
+      // await myToken.connect(owner).close();
+    });
   });
 
 });

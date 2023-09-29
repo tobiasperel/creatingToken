@@ -7,8 +7,7 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 
 contract MyToken is ERC20, Ownable {
 
-    mapping (address => uint256) private balances;
-    uint128 private price = 600 ether / 10 ** 18;
+    uint128 private price = 600;
 
     constructor(string memory _name, string memory _symbol) ERC20("TobiasPerel", "TP") {    }
 
@@ -20,7 +19,7 @@ contract MyToken is ERC20, Ownable {
         return totalSupply() ; 
     }
     function balancOf(address account) public view returns (uint256) {
-        return balances[account];
+        return balanceOf(account);
     }
     function getName() public view returns (string memory) {
         return name();
@@ -33,35 +32,32 @@ contract MyToken is ERC20, Ownable {
     }
     
     function transferToken(address to, uint256 value ) public returns (bool) {
-        require(balances[msg.sender] >= value, "ERC20: transfer amount exceeds balance");
-        balances[msg.sender] -= value;
-        balances[to] += value;
+        require(balanceOf(msg.sender) >= value, "ERC20: transfer amount exceeds balance");
+        _transfer(msg.sender, to, value);
         emit Transfer(msg.sender, to, value);
         return true;
     }
+
     function mint(address to, uint256 amount) external onlyOwner returns (bool){
         _mint(to, amount);
-        balances[to] += amount;
         emit Mint(to, amount);
         return true;
     }
     function sell(uint256 amount) external returns (bool){  
-        require(balances[msg.sender] >= amount, "ERC20: transfer amount exceeds balance");
+        require(balanceOf(msg.sender) >= amount, "ERC20: transfer amount exceeds balance");
         _burn(msg.sender, amount);
-        uint256 weiAmount = amount * price;
-        balances[msg.sender] -= amount;
-        emit Sell(msg.sender, amount);
+        uint256 weiAmount = (amount * price) / (10**18);
+        emit Sell(msg.sender, weiAmount);
         payable(msg.sender).transfer(weiAmount);
         return true;
     }
-
     function close() external onlyOwner {
         uint256 _amount = address(this).balance;
         payable(msg.sender).transfer(_amount);
         selfdestruct(payable(owner()));
     }
     
-    receive() external payable {    }
+    receive() external payable {   }
     fallback() external payable {
         payable(address(this)).transfer(msg.value);
     }
