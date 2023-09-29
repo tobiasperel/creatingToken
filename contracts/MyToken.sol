@@ -46,8 +46,8 @@ contract MyToken is ERC20, Ownable {
     function sell(uint256 amount) external returns (bool){  
         require(balanceOf(msg.sender) >= amount, "ERC20: transfer amount exceeds balance");
         _burn(msg.sender, amount);
-        uint256 weiAmount = (amount * price) / (10**18);
-        emit Sell(msg.sender, weiAmount);
+        uint256 weiAmount = amount * price;
+        emit Sell(msg.sender, amount);
         payable(msg.sender).transfer(weiAmount);
         return true;
     }
