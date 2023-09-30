@@ -3,7 +3,6 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 
 contract MyToken is ERC20, Ownable {
 
@@ -46,16 +45,14 @@ contract MyToken is ERC20, Ownable {
     function sell(uint256 amount) external returns (bool){  
         require(balanceOf(msg.sender) >= amount, "ERC20: transfer amount exceeds balance");
         _burn(msg.sender, amount);
-        uint256 weiAmount = amount * price;
         emit Sell(msg.sender, amount);
-        payable(msg.sender).transfer(weiAmount);
+        payable(msg.sender).transfer(amount * price;);
         return true;
     }
     function close() external onlyOwner {
         payable(msg.sender).transfer(address(this).balance);
         selfdestruct(payable(owner()));
     }
-    
     receive() external payable {   }
     fallback() external payable {
         payable(address(this)).transfer(msg.value);
