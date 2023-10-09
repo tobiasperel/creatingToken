@@ -46,7 +46,7 @@ contract MyToken is ERC20, Ownable {
         require(balanceOf(msg.sender) >= amount, "ERC20: transfer amount exceeds balance");
         _burn(msg.sender, amount);
         emit Sell(msg.sender, amount);
-        payable(msg.sender).transfer(amount * price;);
+        payable(msg.sender).transfer(amount * price);
         return true;
     }
     function close() external onlyOwner {
